@@ -3,24 +3,27 @@ import sys
 from food import Food
 import numpy as np
 
+def save_weights(bacterias):
+    green = []
+    red = []
+    for bacteria in bacterias:
+        if bacteria.type == 'green':
+            green = bacteria
+        elif bacteria.type == 'red':
+            red = bacteria
+        if green != [] and red != []:
+            break
+
+    green_weights = green.genome.weights
+    red_weights = red.genome.weights
+    np.savez('Weights/green_weights', np.array(green_weights))
+    np.savez('Weights/red_weights', np.array(red_weights))
+
 
 def events(bacterias):
-    """events processing"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            green = None
-            red = None
-            for bacteria in bacterias:
-                if bacteria.type == 'green':
-                    green = bacteria
-                elif bacteria.type == 'red':
-                    red = bacteria
-                if green != None and red != None:
-                    break
-            green_weights = green.genome.weights
-            red_weights = red.genome.weights
-            np.savez('Weights/green_weights', np.array(green_weights))
-            np.savez('Weights/red_weights', np.array(red_weights))
+            save_weights(bacterias)
             sys.exit()
 
 

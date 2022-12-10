@@ -1,12 +1,6 @@
-import copy
-import math
-
 import pygame
 import random
-from math import sqrt, atan2, pi
 import numpy as np
-
-from pygame.math import Vector2
 
 from genome import Genome
 from nn import NN
@@ -15,7 +9,6 @@ from nn import NN
 class Bacteria(pygame.sprite.Sprite):
 
     def __init__(self, screen, bacteria_type, time_tick, old_weights=False):
-        """initialization"""
         super(Bacteria, self).__init__()
 
         self.type = bacteria_type
@@ -130,14 +123,6 @@ class Bacteria(pygame.sprite.Sprite):
             if direction.length() > 0:
                 target += direction * outputs[i]
 
-        # print('inputs =', inputs)
-        # print('outputs =', outputs)
-        # print('target =', target)
-        # print('self_center =', self.rect.center)
-        # print('center food =', neighbors_vectors[-1])
-        # print(self.genome.speed)
-        # print('age =', self.age)
-        # print('velo =', self.velocity)
         self.boundary_check(screen)
         self.move(target)
 
@@ -150,7 +135,7 @@ class Bacteria(pygame.sprite.Sprite):
 
         if self.age > 100000:
             self.kill()
-    wt23d4s2
+
     def on_rect_enter(self, bacterias, food):
         if self.type == 'green':
             for bacteria in bacterias:

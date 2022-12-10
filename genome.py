@@ -25,15 +25,15 @@ class Genome:
             if random.uniform(0.0, 1.0) < 0.1:
                 new_genome.weights[i] += random.uniform(-value, value)
 
-        new_genome.size[0] += self.size[0] + random.randint(-5, 5)
-        new_genome.size[1] += self.size[1] + random.randint(-5, 5)
-        new_genome.speed = 1 / ((new_genome.size[0] + new_genome.size[1]) / 2)
-        new_genome.attack += random.randint(-1, 1)
-        new_genome.defense += random.randint(-1, 1)
+        if random.uniform(0.0, 1.0) < 0.1:
+            new_genome.size[0] += self.size[0] + random.randint(-5, 5)
+        if random.uniform(0.0, 1.0) < 0.1:
+            new_genome.size[1] += self.size[1] + random.randint(-5, 5)
+        if random.uniform(0.0, 1.0) < 0.1:
+            new_genome.speed = 1 / ((new_genome.size[0] + new_genome.size[1]) / 2)
+        if random.uniform(0.0, 1.0) < 0.1:
+            new_genome.attack += random.randint(-1, 1)
+        if random.uniform(0.0, 1.0) < 0.1:
+            new_genome.defense += random.randint(-1, 1)
 
         return new_genome
-
-
-    # def __init__(self, bacteria):
-    #     self.skills = copy.deepcopy(bacteria.genome.skills)
-    #     self.weights = copy.deepcopy(bacteria.genome.weights)

@@ -3,6 +3,7 @@ import sys
 from food import Food
 import numpy as np
 
+
 def save_weights(bacterias):
     green = []
     red = []

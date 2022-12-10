@@ -31,7 +31,7 @@ def update(width, height, title, bg_color, amount_of_food, amount_of_green, amou
 
 if __name__ == '__main__':
     width, height = 1500, 800
-    title = 'BactSimu'
+    title = 'SimuBact'
     bg_color = (255, 255, 255)
     amount_of_food = 1000
     amount_of_green = 20

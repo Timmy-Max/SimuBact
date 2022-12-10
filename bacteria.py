@@ -126,12 +126,12 @@ class Bacteria(pygame.sprite.Sprite):
         self.boundary_check(screen)
         self.move(target)
 
+        if self.energy <= 0:
+            self.kill()
+
         if self.energy >= 20:
             self.energy = 3
             self.create_a_descendant(bacterias, screen, time_tick)
-
-        if self.energy <= 0:
-            self.kill()
 
         if self.age > 100000:
             self.kill()

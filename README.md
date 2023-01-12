@@ -4,7 +4,7 @@ A simple implementation of natural selection. Each bacterium is controlled by a 
 Red bacteria can only eat green bacteria. Green bacteria only eat food scattered across the screen. Each bacterium has its own speed, attack and defense, as well as size. These parameters can mutate during reproduction.
 ## Dependencies
 python version 3.9, pygame version 2.1.2 and numpy version 1.23.5 can be installed manually. There are decent chances that everything will work with older versions but it was never tested.
-## Install
+## Run
 ```
 git clone https://github.com/Timmy-Max/SimuBact.git
 cd SimuBact

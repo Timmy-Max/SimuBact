@@ -5,6 +5,8 @@ Red bacteria can only eat green bacteria. Green bacteria only eat food scattered
 ## Dependencies
 python version 3.9, pygame version 2.1.2 and numpy version 1.23.5 can be installed manually. There are decent chances that everything will work with older versions but it was never tested.
 ## Install
-''' 
-git clone https://github.com/Timmy-Max/SimuBact.git 
-'''
+```
+function test() {
+  console.log("notice the blank line before this function?");
+}
+```

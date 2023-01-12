@@ -7,4 +7,6 @@ python version 3.9, pygame version 2.1.2 and numpy version 1.23.5 can be install
 ## Install
 ```
 git clone https://github.com/Timmy-Max/SimuBact.git
+cd SimuBact
+./run_game.sh
 ```

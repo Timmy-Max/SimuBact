@@ -12,5 +12,5 @@ class Food(pygame.sprite.Sprite):
         food_x = random.randint(0, screen.get_width())
         food_y = random.randrange(0, screen.get_height())
         self.image = pygame.image.load('Images/food_image.png')
-        self.image = pygame.transform.scale(self.image, (3, 3))
+        self.image = pygame.transform.scale(self.image, (10, 10))
         self.rect = self.image.get_rect(center=(food_x, food_y))

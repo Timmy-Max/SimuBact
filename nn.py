@@ -5,6 +5,7 @@ import copy
 
 class NN:
     def __init__(self, sizes):
+        self.sizes = sizes
         sizes_length = len(sizes)
         self.layers = []
 
@@ -38,11 +39,11 @@ class NN:
 
         return self.layers[layers_count - 1].neurons
 
-    def update_weights(self, weights, input_size):
-        for i in range(input_size):
-            for j in range(8):
-                self.layers[0].weights[i][j] = weights[i + j * input_size]
+    def update_weights(self, weights, sizes):
+        for i in range(sizes[0]):
+            for j in range(sizes[1]):
+                self.layers[0].weights[i][j] = weights[i + j * sizes[0]]
 
-        for i in range(8):
-            for j in range(3):
-                self.layers[1].weights[i][j] = weights[i + j * 8 + input_size * 8]
+        for i in range(sizes[1]):
+            for j in range(sizes[2]):
+                self.layers[1].weights[i][j] = weights[i + j * sizes[1] + sizes[0] * sizes[1]]

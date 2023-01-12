@@ -11,7 +11,7 @@ class Genome:
 
         rand_size = random.randrange(1, 15)
         self.size = [5 + rand_size, 12.5 + rand_size * 2.5]
-        self.speed = 0.1 / ((self.size[0] + self.size[1]) / 2)
+        self.speed = 0.05 / ((self.size[0] + self.size[1]) / 2)
         self.defense = 1 + random.randint(1, 5)
         if type == 'red':
             self.attack = 3 + random.randint(1, 5)
@@ -29,8 +29,7 @@ class Genome:
             new_genome.size[0] += self.size[0] + random.randint(-5, 5)
         if random.uniform(0.0, 1.0) < 0.1:
             new_genome.size[1] += self.size[1] + random.randint(-5, 5)
-        if random.uniform(0.0, 1.0) < 0.1:
-            new_genome.speed = 1 / ((new_genome.size[0] + new_genome.size[1]) / 2)
+            new_genome.speed = 0.05 / ((new_genome.size[0] + new_genome.size[1]) / 2)
         if random.uniform(0.0, 1.0) < 0.1:
             new_genome.attack += random.randint(-1, 1)
         if random.uniform(0.0, 1.0) < 0.1:

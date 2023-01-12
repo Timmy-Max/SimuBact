@@ -8,7 +8,7 @@ from nn import NN
 
 class Bacteria(pygame.sprite.Sprite):
 
-    def __init__(self, screen, bacteria_type, time_tick, old_weights=False):
+    def __init__(self, screen, bacteria_type, time_tick, load_weights=False):
         super(Bacteria, self).__init__()
 
         self.type = bacteria_type
@@ -19,6 +19,7 @@ class Bacteria(pygame.sprite.Sprite):
         initial_position = (random.randrange(0, screen_width, 1), random.randrange(0, screen_height, 1))
 
         self.screen = screen
+        self.score = 0
 
         self.image_orig = pygame.image.load(f'Images/{self.type}_bacteria.png')
         self.image_orig = pygame.transform.scale(self.image_orig, self.genome.size)
@@ -35,15 +36,16 @@ class Bacteria(pygame.sprite.Sprite):
         self.age = 0
         self.birth_tick = time_tick / 1000
         self.last_rotate = time_tick
-        self.nn = NN((3, 8, 3))
-        if old_weights:
+        self.nn = NN([3, 8, 3])
+
+        if load_weights:
             self.genome.weights = list(np.load(f'Weights/{self.type}_weights.npz')['arr_0'])
-            self.nn.update_weights(self.genome.weights, 3)
+            self.nn.update_weights(self.genome.weights, self.nn.sizes)
 
     def create_a_descendant(self, bacterias, screen, time_tick):
         new_bacteria = Bacteria(screen, self.type, time_tick)
         new_bacteria.genome = self.genome.mutate(0.5)
-        new_bacteria.nn.update_weights(new_bacteria.genome.weights, 3)
+        new_bacteria.nn.update_weights(new_bacteria.genome.weights, self.nn.sizes)
         new_bacteria.rect.centerx = self.rect.centerx + (self.genome.size[0] // 2 + 3)
         new_bacteria.rect.centery = self.rect.centery
         bacterias.add(new_bacteria)
@@ -110,9 +112,6 @@ class Bacteria(pygame.sprite.Sprite):
         self.age += time_tick - self.birth_tick
 
     def update(self, screen, time_tick, bacterias, food):
-
-        self.on_rect_enter(bacterias, food)
-
         self.update_age(time_tick)
         neighbors_vectors = self.find_neighbors(bacterias, food)
         inputs = neighbors_vectors[0]
@@ -123,8 +122,9 @@ class Bacteria(pygame.sprite.Sprite):
             if direction.length() > 0:
                 target += direction * outputs[i]
 
-        self.boundary_check(screen)
         self.move(target)
+        self.boundary_check(screen)
+        self.on_rect_enter(bacterias, food)
 
         if self.energy <= 0:
             self.kill()
@@ -137,20 +137,32 @@ class Bacteria(pygame.sprite.Sprite):
             self.kill()
 
     def on_rect_enter(self, bacterias, food):
-        if self.type == 'green':
-            for bacteria in bacterias:
-                if self.rect.colliderect(bacteria.rect) and bacteria.type == 'green':
-                    self.velocity *= -0.3
-                elif self.rect.colliderect(bacteria.rect) and bacteria.type == 'red':
-                    self.energy -= bacteria.genome.attack - self.genome.defense
-                    bacteria.energy -= self.genome.attack - bacteria.genome.defense
-                    self.velocity = bacteria.velocity * 0.1
-                    bacteria.velocity *= -0.1
+        bacterias_collided = pygame.sprite.spritecollide(self, bacterias, False, False)
+        for bacteria in bacterias_collided:
+            if self.type == 'green' and bacteria.type == 'green':
+                # self.velocity = 0.5 * bacteria.velocity
+                # bacteria.velocity *= -0.5
+                continue
+            elif self.type == 'green' and bacteria.type == 'red':
+                # self.velocity = bacteria.velocity * 0.5
+                # bacteria.velocity *= -0.5
+                damage_received = max(0, bacteria.genome.attack - self.genome.defense)
+                damage_done = max(0, self.genome.attack - bacteria.genome.defense)
+                self.energy -= damage_received
+                if self.energy <= 0:
+                    bacteria.energy += 17 - damage_done
+                    bacteria.score += 1
+            elif self.type == 'red' and bacteria.type == 'red':
+                # self.velocity = 0.5 * bacteria.velocity
+                # bacteria.velocity *= -0.5
+                continue
 
-            for food_i in food:
-                if self.rect.colliderect(food_i.rect):
-                    self.energy += 1
-                    food_i.kill()
+        if self.type == 'green':
+            food_collided = pygame.sprite.spritecollide(self, food, False, False)
+            for food_i in food_collided:
+                self.energy += 1
+                self.score += 1
+                food_i.kill()
 
     def rotate(self, angle):
         new_image = pygame.transform.rotate(self.image_orig, -angle - 90)
@@ -159,7 +171,7 @@ class Bacteria(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=old_center)
 
     def move(self, target):
-        self.velocity += 0.1 * target * self.genome.speed
+        self.velocity += 0.05 * target * self.genome.speed
 
         radius, angle = self.velocity.as_polar()
         self.rotate(angle)
@@ -172,11 +184,15 @@ class Bacteria(pygame.sprite.Sprite):
         height = screen.get_height()
 
         if self.rect.left <= 0:
-            self.rect.left = 5
+            self.rect.left = 20
+            self.velocity *= -1
         elif self.rect.right >= width:
-            self.rect.right = width - 5
+            self.rect.right = width - 20
+            self.velocity *= -1
 
         if self.rect.top <= 0:
-            self.rect.top = 5
+            self.rect.top = 20
+            self.velocity *= -1
         elif self.rect.bottom >= height:
-            self.rect.bottom = height - 5
+            self.rect.bottom = height - 20
+            self.velocity *= -1

@@ -1,49 +1,38 @@
-from layer import Layer
-import random
-import copy
+import torch
+import torch.nn as nn
+
+from typing import Any, Mapping
 
 
-class NN:
-    def __init__(self, sizes):
+class NN(nn.Module):
+    def __init__(self, sizes: tuple):
+        """Initialization of NN.
+
+        Params:
+            size: sizes of layers
+        """
+        super().__init__()
         self.sizes = sizes
-        sizes_length = len(sizes)
-        self.layers = []
+        self.nn = torch.nn.Sequential(
+            nn.Linear(self.sizes[0], self.sizes[1]),
+            nn.ReLU(),
+            nn.Linear(self.sizes[1], self.sizes[1] // 2),
+            nn.ReLU(),
+            nn.Linear(self.sizes[1] // 2, sizes[2]),
+            nn.Softmax(dim=0),
+        )
 
-        for i in range(len(sizes)):
-            next_size = 0
-            if i < sizes_length - 1:
-                next_size = sizes[i + 1]
-                self.layers.append(Layer(sizes[i], next_size))
-                for j in range(sizes[i]):
-                    for k in range(next_size):
-                        self.layers[i].weights[j][k] = random.uniform(-1.0, 1.0)
-            else:
-                self.layers.append(Layer(sizes[i], 0, True))
-                for k in range(sizes[i]):
-                    self.layers[i].weights[k] = random.uniform(-1.0, 1.0)
+    def feed_forward(self, inputs: tuple):
+        """Function return"""
+        with torch.no_grad():
+            inputs = torch.FloatTensor(inputs)
+        output = self.nn(inputs).detach().numpy()
+        return output
 
-    def feed_forward(self, inputs):
-        self.layers[0].neurons = copy.deepcopy(inputs)
-        layers_count = len(self.layers)
-        for i in range(1, layers_count):
-            min_ = 0.0
-            if i == layers_count - 1:
-                min_ = -1.0
-            layer_prev = self.layers[i - 1]
-            layer_next = self.layers[i]
-            for j in range(layer_next.size):
-                layer_next.neurons[j] = 0
-                for k in range(layer_prev.size):
-                    layer_next.neurons[j] += layer_prev.neurons[k] * layer_prev.weights[k][j]
-                layer_next.neurons[j] = min(1.0, max(min_, layer_next.neurons[j]))
+    def update_weights(self, weights: Mapping[str, Any]):
+        """Function copies the weights of another network to the current one
 
-        return self.layers[layers_count - 1].neurons
-
-    def update_weights(self, weights, sizes):
-        for i in range(sizes[0]):
-            for j in range(sizes[1]):
-                self.layers[0].weights[i][j] = weights[i + j * sizes[0]]
-
-        for i in range(sizes[1]):
-            for j in range(sizes[2]):
-                self.layers[1].weights[i][j] = weights[i + j * sizes[1] + sizes[0] * sizes[1]]
+        Params:
+            weights: weights of another bacteria network
+        """
+        self.nn.load_state_dict(state_dict=weights)
